@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace StateMachine
+namespace StateMachine.Animation
 {
     public static class SpritesheetHelper
     {
@@ -10,7 +10,7 @@ namespace StateMachine
         public static string GetSpritesheetPath()
         {
             // Assuming the spritesheet is in the same directory as the executable
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Mario.png");
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Mario2.png");
         }
 
         // Define frames for idle animation (standing)
@@ -41,8 +41,6 @@ namespace StateMachine
                 (8, 33, 48, 48),
                 (8, 33, 48, 48),
                 (8+52, 33, 48, 48)
-                
-
             });
             
             animator.FrameDelay = TimeSpan.FromMilliseconds(500);

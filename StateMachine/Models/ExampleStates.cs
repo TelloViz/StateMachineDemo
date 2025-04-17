@@ -1,8 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using Vast.StateMachine;
 
-namespace StateMachine
+namespace StateMachine.Models
 {
     public class IdleState : State
     {

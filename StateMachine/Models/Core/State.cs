@@ -1,12 +1,15 @@
-﻿using System;
+using System;
 
-namespace Vast.StateMachine {
+namespace Vast.StateMachine
+{
     [Serializable]
-    public abstract class State {
+    public abstract class State
+    {
         private string name = String.Empty;
 
         #region Properties
-        public string Name {
+        public string Name
+        {
             get { return this.name; }
             protected set { this.name = value; }
         }

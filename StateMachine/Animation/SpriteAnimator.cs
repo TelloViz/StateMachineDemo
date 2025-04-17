@@ -5,7 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-namespace StateMachine
+namespace StateMachine.Animation
 {
     public class SpriteAnimator
     {
