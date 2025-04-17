@@ -5,8 +5,80 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StateMachine"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+        Title="State Machine Demo" Height="550" Width="800">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Current State Display -->
+        <Border Grid.Row="0" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10" Margin="0,0,0,10">
+            <StackPanel>
+                <TextBlock Text="Current State:" FontWeight="Bold"/>
+                <TextBlock Text="{Binding CurrentStateName}" FontSize="24" HorizontalAlignment="Center" 
+                           Foreground="#0066CC"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Sprite Animation Display -->
+        <Border Grid.Row="1" Background="#000000" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10" Margin="0,0,0,10"
+                HorizontalAlignment="Center">
+            <Grid>
+                <Image Source="{Binding CurrentSpriteFrame}" 
+                       Width="144" Height="144" 
+                       RenderOptions.BitmapScalingMode="NearestNeighbor"
+                       RenderTransformOrigin="0.5,0.5">
+                    <Image.RenderTransform>
+                        <ScaleTransform ScaleX="2" ScaleY="2"/>
+                    </Image.RenderTransform>
+                </Image>
+            </Grid>
+        </Border>
+        
+        <!-- State Change Buttons -->
+        <GroupBox Grid.Row="2" Header="Change State" Padding="5" Margin="0,0,0,10">
+            <ItemsControl ItemsSource="{Binding AvailableStates}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding}" Margin="5" Padding="10,5" 
+                                Command="{Binding DataContext.ChangeStateCommand, 
+                                          RelativeSource={RelativeSource AncestorType=Window}}" 
+                                CommandParameter="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </GroupBox>
+        
+        <!-- Log Display -->
+        <GroupBox Grid.Row="3" Header="State Machine Log" Padding="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <Button Grid.Row="0" Content="Clear Log" 
+                        Command="{Binding ClearLogCommand}"
+                        HorizontalAlignment="Right" 
+                        Margin="0,0,0,5" 
+                        Padding="10,3"/>
+                
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <TextBox Text="{Binding LogText, Mode=OneWay}" 
+                             IsReadOnly="True" 
+                             FontFamily="Consolas"
+                             Background="#F5F5F5"
+                             BorderThickness="0"/>
+                </ScrollViewer>
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>

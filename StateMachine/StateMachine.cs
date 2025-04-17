@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Vast.StateMachine {
     /// <summary>Maintains List of States, handles Adding, Removing, &amp; Changing of Active States.</summary>
@@ -29,7 +28,7 @@ namespace Vast.StateMachine {
         public State AddState(State stateToAdd) {
             State addedState = null;
             if(ContainsState(stateToAdd)) {
-                Debug.LogError("<color=yellow>State [" + stateToAdd.Name + "] NOT Added! Error: Duplicate State Name</color>");
+                Console.WriteLine($"State [{stateToAdd.Name}] NOT Added! Error: Duplicate State Name");
             } else {
                 States.Add(stateToAdd);
                 addedState = stateToAdd;
@@ -60,7 +59,7 @@ namespace Vast.StateMachine {
                 States.Remove(stateToRemove);
                 OnStateRemove?.Invoke(stateToRemove);
             } else {
-                Debug.LogError("<color=yellow>State [" + stateToRemove.Name + "] NOT Removed! Error: State Not Found In StateMachine</color>");
+                Console.WriteLine($"State [{stateToRemove.Name}] NOT Removed! Error: State Not Found In StateMachine");
             }
         }
 
@@ -71,7 +70,7 @@ namespace Vast.StateMachine {
             if(ContainsState(stateNameToRemove, out stateToRemove)) {
                 RemState(stateToRemove);
             } else {
-                Debug.LogError("<color=yellow>State [" + stateNameToRemove + "] NOT Removed! Error: State Not Found In StateMachine</color>");
+                Console.WriteLine($"State [{stateNameToRemove}] NOT Removed! Error: State Not Found In StateMachine");
             }
         }
 
@@ -103,7 +102,7 @@ namespace Vast.StateMachine {
                 OnStateChange?.Invoke(toState);
                 ActiveState.OnEnter();
             } else {
-                Debug.LogError("<color=yellow>StateMachine does not contain an entry for: " + toState.Name + "</color>");
+                Console.WriteLine($"StateMachine does not contain an entry for: {toState.Name}");
             }
         }
 
@@ -114,7 +113,7 @@ namespace Vast.StateMachine {
             if(ContainsState(toStateName, out toState)) {
                 ChangeState(toState);
             } else {
-                Debug.LogError("<color=yellow>StateMachine does not contain an entry for: " + toStateName + "</color>");
+                Console.WriteLine($"StateMachine does not contain an entry for: {toStateName}");
             }
         }
 
