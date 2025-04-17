@@ -220,6 +220,8 @@ namespace StateMachine.ViewModels
         public ICommand ClearLogCommand { get; }
         public ICommand UpdateStateCommand { get; }
         public ICommand SimulateActivityCommand { get; }
+        public ICommand SwitchToMarioCommand { get; }
+        public ICommand SwitchToLuigiCommand { get; }
         #endregion
 
         public StateMachineViewModel()
@@ -269,6 +271,8 @@ namespace StateMachine.ViewModels
             ClearLogCommand = new RelayCommand<object>(_ => ClearLog());
             UpdateStateCommand = new RelayCommand<object>(_ => UpdateActiveState());
             SimulateActivityCommand = new RelayCommand<object>(_ => ToggleAutomaticStateChanges());
+            SwitchToMarioCommand = new RelayCommand<object>(_ => SwitchCharacter(SpritesheetHelper.Character.Mario));
+            SwitchToLuigiCommand = new RelayCommand<object>(_ => SwitchCharacter(SpritesheetHelper.Character.Luigi));
             
             // Setup update timer for updating state time display and other UI elements
             _updateTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
@@ -585,6 +589,28 @@ namespace StateMachine.ViewModels
             
             AddLogMessage($"Automatic transition to {newState}");
             ChangeState(newState);
+        }
+
+        private void SwitchCharacter(SpritesheetHelper.Character character)
+        {
+            // Update the character in SpritesheetHelper
+            SpritesheetHelper.SetCharacter(character);
+            
+            // Reinitialize the sprite animator with the new spritesheet
+            try
+            {
+                _spriteAnimator.Stop();
+                _spriteAnimator.ChangeSpritesheet(SpritesheetHelper.GetSpritesheetPath());
+                
+                // Update animation for current state
+                UpdateAnimationForState();
+                
+                AddLogMessage($"Switched to {character} sprite");
+            }
+            catch (Exception ex)
+            {
+                AddLogMessage($"Failed to switch sprite: {ex.Message}");
+            }
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

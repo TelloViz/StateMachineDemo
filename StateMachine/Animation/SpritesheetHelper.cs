@@ -7,10 +7,28 @@ namespace StateMachine.Animation
 {
     public static class SpritesheetHelper
     {
+        // Character selection options
+        public enum Character
+        {
+            Mario,
+            Luigi
+        }
+        
+        private static Character _currentCharacter = Character.Mario;
+        
+        public static Character CurrentCharacter => _currentCharacter;
+        
+        public static void SetCharacter(Character character)
+        {
+            _currentCharacter = character;
+        }
+        
         // Path to the spritesheet (relative to executable)
         public static string GetSpritesheetPath()
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Mario3.png");
+            return _currentCharacter == Character.Mario 
+                ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Mario3.png")
+                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "LuigiSmall.png");
         }
 
         // Define frames for idle animation (standing)

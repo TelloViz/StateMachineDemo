@@ -12,10 +12,14 @@
     <None Update="Resources\Mario3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\LuigiSmall.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Mario3.png" />
+    <EmbeddedResource Include="Resources\LuigiSmall.png" />
   </ItemGroup>
 
 </Project>

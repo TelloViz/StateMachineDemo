@@ -9,7 +9,7 @@ namespace StateMachine.Animation
 {
     public class SpriteAnimator
     {
-        private readonly BitmapImage _spritesheet;
+        private BitmapImage _spritesheet;
         private readonly List<Int32Rect> _frames = new List<Int32Rect>();
         private readonly DispatcherTimer _animationTimer;
         private int _currentFrameIndex = 0;
@@ -77,6 +77,24 @@ namespace StateMachine.Animation
         {
             _currentFrameIndex = 0;
             UpdateCurrentFrame();
+        }
+
+        public void ChangeSpritesheet(string spritesheetPath)
+        {
+            // Stop any current animation
+            Stop();
+            
+            // Load the new spritesheet
+            _spritesheet = new BitmapImage(new Uri(spritesheetPath, UriKind.RelativeOrAbsolute));
+            
+            // Reset the animation
+            _currentFrameIndex = 0;
+            
+            // Update the current frame with the new spritesheet
+            if (_frames.Count > 0)
+            {
+                UpdateCurrentFrame();
+            }
         }
 
         private void AnimationTick(object sender, EventArgs e)
