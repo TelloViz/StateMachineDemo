@@ -10,7 +10,7 @@ namespace StateMachine.Animation
         public static string GetSpritesheetPath()
         {
             // Assuming the spritesheet is in the same directory as the executable
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Mario2.png");
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Mario3.png");
         }
 
         // Define frames for idle animation (standing)
@@ -21,26 +21,22 @@ namespace StateMachine.Animation
             // Using a single frame for idle (assuming it's near the walking frames)
             animator.AddFrames(new List<(int x, int y, int width, int height)>
             {
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8, 33, 48, 48),
-                (8+52, 33, 48, 48)
+                (0, 0, 48, 48)
+            });
+            
+            animator.FrameDelay = TimeSpan.FromMilliseconds(500);
+        }
+
+ public static void ConfigureLookUpAnimation(SpriteAnimator animator)
+        {
+            animator.ClearFrames();
+            
+            animator.AddFrames(new List<(int x, int y, int width, int height)>
+            {
+                (52, 0, 48, 48),
+                (52, 0, 48, 48),
+                (52, 0, 48, 48),
+                (52, 0, 48, 48)
             });
             
             animator.FrameDelay = TimeSpan.FromMilliseconds(500);
@@ -54,9 +50,10 @@ namespace StateMachine.Animation
             // User-provided coordinates for walking frames (48x48 pixels each)
             animator.AddFrames(new List<(int x, int y, int width, int height)>
             {
-                (164, 33, 48, 48),  // Frame 1
-                (216, 33, 48, 48),  // Frame 2
-                (268, 33, 48, 48)   // Frame 3
+                
+                (156, 0, 48, 48),  // Frame 2
+                (208, 0, 48, 48),   // Frame 3
+                (260, 0, 48, 48)  // Frame 1
             });
             
             animator.FrameDelay = TimeSpan.FromMilliseconds(150);
@@ -70,9 +67,9 @@ namespace StateMachine.Animation
             // Using the same frames as walking but with faster animation
             animator.AddFrames(new List<(int x, int y, int width, int height)>
             {
-                (268+52, 33, 48, 48),  // Frame 1
-                (268+52+52, 33, 48, 48),  // Frame 2
-                (268+52+52+52, 33, 48, 48)   // Frame 3
+                (52*6, 0, 48, 48),  // Frame 1
+                (52*7, 0, 48, 48),  // Frame 2
+                (52*8, 0, 48, 48)   // Frame 3
             });
             
             // Running is faster than walking

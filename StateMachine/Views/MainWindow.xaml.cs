@@ -13,24 +13,48 @@ namespace StateMachine.Views
     {
         public MainWindow()
         {
-            InitializeComponent();
-            
-            // Update spritesheet path handling
-            string spritesheetPath = SpritesheetHelper.GetSpritesheetPath();
-            Console.WriteLine($"Looking for spritesheet at: {spritesheetPath}");
-            
-            if (!File.Exists(spritesheetPath))
+            try
+            {
+                InitializeComponent();
+                
+                // Update spritesheet path handling
+                string spritesheetPath = SpritesheetHelper.GetSpritesheetPath();
+                Console.WriteLine($"Looking for spritesheet at: {spritesheetPath}");
+                
+                if (!File.Exists(spritesheetPath))
+                {
+                    MessageBox.Show(
+                        $"Spritesheet not found at {spritesheetPath}. " +
+                        $"Please copy the Mario spritesheet to this location and restart the application.",
+                        "Spritesheet Not Found",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
+                }
+                
+                try
+                {
+                    DataContext = new StateMachineViewModel();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        $"Error initializing ViewModel: {ex.Message}\n{ex.StackTrace}",
+                        "ViewModel Initialization Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+                }
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Spritesheet not found at {spritesheetPath}. " +
-                    $"Please copy the Mario spritesheet to this location and restart the application.",
-                    "Spritesheet Not Found",
+                    $"Error during MainWindow initialization: {ex.Message}\n{ex.StackTrace}",
+                    "Startup Error",
                     MessageBoxButton.OK,
-                    MessageBoxImage.Warning
+                    MessageBoxImage.Error
                 );
             }
-            
-            DataContext = new StateMachineViewModel();
         }
     }
 }

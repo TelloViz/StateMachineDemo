@@ -6,7 +6,9 @@
         xmlns:viewmodels="clr-namespace:StateMachine.ViewModels"
         xmlns:local="clr-namespace:StateMachine.Views"
         mc:Ignorable="d"
-        Title="State Machine Demo" Height="750" Width="950">
+        Title="State Machine Demo"
+        Height="750"
+        Width="950">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -14,174 +16,320 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
-        <!-- Current State Display -->
-        <Border Grid.Row="0" Grid.Column="0" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10" Margin="0,0,10,20">
-            <StackPanel>
-                <TextBlock Text="Current State:" FontWeight="Bold"/>
-                <TextBlock Text="{Binding CurrentStateName}" FontSize="24" HorizontalAlignment="Center" 
-                           Foreground="#0066CC"/>
-            </StackPanel>
-        </Border>
-        
-        <!-- State Machine Details Panel -->
-        <GroupBox Grid.Row="0" Grid.Column="1" Header="State Machine Details" Margin="0,0,0,20">
-            <Grid Margin="5">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Current State:" Margin="0,5,5,5" FontWeight="SemiBold"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentStateName}" Margin="0,5,0,5"/>
-                
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Previous State:" Margin="0,5,5,5" FontWeight="SemiBold"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding PreviousStateName}" Margin="0,5,0,5"/>
-                
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="State Count:" Margin="0,5,5,5" FontWeight="SemiBold"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding StateCount}" Margin="0,5,0,5"/>
-                
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Time in State:" Margin="0,5,5,5" FontWeight="SemiBold"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding TimeInCurrentState}" Margin="0,5,0,5"/>
-            </Grid>
-        </GroupBox>
-        
-        <!-- Sprite Animation Display -->
-        <Border Grid.Row="1" Grid.Column="0"
-                Background="#FAFAFA" 
-                BorderBrush="#DDDDDD" 
-                BorderThickness="1" 
-                Padding="10"
-                Margin="0,0,10,20"
-                HorizontalAlignment="Center">
-            <StackPanel>
-                <TextBlock Text="Sprite Animation" 
-                           FontWeight="Bold" 
-                           Margin="0,0,0,10" 
+
+        <!-- Top Section Container -->
+        <Grid Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Sprite Animation Display -->
+            <Border Grid.Row="0"
+                    Grid.Column="0"
+                    Background="#FAFAFA"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    Padding="10"
+                    Margin="0,0,10,20"
+                    HorizontalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="Current State: "
+                               FontWeight="Bold"
+                               Margin="0,0,0,5"
+                               HorizontalAlignment="Center">
+                        <Run Text="{Binding CurrentStateName, Mode=OneWay}"
+                                FontSize="18"
+                                Foreground="#0066CC"/>
+                    </TextBlock>
+
+                    <Image Source="{Binding CurrentSpriteFrame}"
+                           Width="192"
+                            Height="192"
+                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                           Stretch="Uniform"
                            HorizontalAlignment="Center"/>
-                           
-                <Image Source="{Binding CurrentSpriteFrame}" 
-                       Width="192" Height="192" 
-                       RenderOptions.BitmapScalingMode="NearestNeighbor"
-                       Stretch="Uniform"
-                       HorizontalAlignment="Center"/>
-            </StackPanel>
-        </Border>
-        
-        <!-- State Machine Visualization -->
-        <Border Grid.Row="1" Grid.Column="1" 
-                Background="#FAFAFA" 
-                BorderBrush="#DDDDDD" 
-                BorderThickness="1"
-                Margin="0,0,0,20">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                <TextBlock Grid.Row="0" Text="State Machine Diagram" 
-                           FontWeight="Bold" Margin="10,10,0,5"/>
-                
-                <Canvas Grid.Row="1" x:Name="StateDiagramCanvas" Background="#FCFCFC" 
-                        Width="280" Height="192" Margin="10">
-                    <!-- State boxes with connections will be drawn here by view model -->
-                    <Border Canvas.Left="40" Canvas.Top="70" 
-                            Width="60" Height="40" 
-                            BorderBrush="{Binding IdleStateBorderBrush}" 
-                            Background="{Binding IdleStateBackground}"
-                            BorderThickness="2" CornerRadius="5">
-                        <TextBlock Text="Idle" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    
-                    <Border Canvas.Left="110" Canvas.Top="30" 
-                            Width="60" Height="40" 
-                            BorderBrush="{Binding WalkingStateBorderBrush}" 
-                            Background="{Binding WalkingStateBackground}"
-                            BorderThickness="2" CornerRadius="5">
-                        <TextBlock Text="Walking" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    
-                    <Border Canvas.Left="180" Canvas.Top="70" 
-                            Width="60" Height="40" 
-                            BorderBrush="{Binding RunningStateBorderBrush}" 
-                            Background="{Binding RunningStateBackground}"
-                            BorderThickness="2" CornerRadius="5">
-                        <TextBlock Text="Running" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    
-                    <!-- Connectors -->
-                    <Line X1="100" Y1="70" X2="110" Y2="50" Stroke="#888888" StrokeThickness="1.5"/>
-                    <Line X1="170" Y1="50" X2="180" Y2="70" Stroke="#888888" StrokeThickness="1.5"/>
-                    <Line X1="100" Y1="90" X2="180" Y2="90" Stroke="#888888" StrokeThickness="1.5"/>
-                    
-                    <!-- Last Transition Indicator -->
-                    <Path x:Name="TransitionPath" 
-                          Stroke="Red" 
-                          StrokeThickness="2.5"
-                          Opacity="{Binding TransitionIndicatorOpacity}"
-                          Data="{Binding LastTransitionPathData}"/>
-                </Canvas>
-            </Grid>
-        </Border>
-        
-        <!-- State Change Buttons -->
-        <GroupBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Change State" Padding="10" Margin="0,0,0,20">
-            <UniformGrid Rows="1">
-                <Button Content="Idle" Margin="8" Padding="15,8" 
-                        Command="{Binding ChangeStateCommand}" 
-                        CommandParameter="Idle"/>
-                
-                <Button Content="Walking" Margin="8" Padding="15,8" 
-                        Command="{Binding ChangeStateCommand}" 
-                        CommandParameter="Walking"/>
-                
-                <Button Content="Running" Margin="8" Padding="15,8" 
-                        Command="{Binding ChangeStateCommand}" 
-                        CommandParameter="Running"/>
-                
-                <Button Content="Update Current State" Margin="8" Padding="15,8" 
-                        Command="{Binding UpdateStateCommand}"/>
-            </UniformGrid>
-        </GroupBox>
-        
-        <!-- Log Display -->
-        <GroupBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Header="State Machine Log" Padding="10">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,8">
-                    <Button Content="Simulate Activity" 
-                            Command="{Binding SimulateActivityCommand}"
-                            Margin="0,0,8,0" 
-                            Padding="12,4"/>
-                    
-                    <Button Content="Clear Log" 
-                            Command="{Binding ClearLogCommand}"
-                            Padding="12,4"/>
                 </StackPanel>
-                
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                    <TextBox Text="{Binding LogText, Mode=OneWay}" 
-                             IsReadOnly="True" 
-                             FontFamily="Consolas"
-                             Background="#F5F5F5"
-                             BorderThickness="0"/>
-                </ScrollViewer>
-            </Grid>
-        </GroupBox>
+            </Border>
+
+            <!-- State Machine Visualization -->
+            <Border Grid.Row="0"
+                    Grid.Column="1"
+                    Background="#FAFAFA"
+                    BorderBrush="#DDDDDD"
+                    BorderThickness="1"
+                    Margin="0,0,0,20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                            Text="State Machine Diagram"
+                               FontWeight="Bold"
+                            Margin="10,10,0,5"/>
+
+                    <Canvas Grid.Row="1"
+                            x:Name="StateDiagramCanvas"
+                            Background="#FCFCFC"
+                            Width="280"
+                            Height="192"
+                            Margin="10">
+                        <!-- State boxes with connections -->
+                        <Border Canvas.Left="40"
+                                Canvas.Top="80"
+                                Width="60"
+                                Height="40"
+                                BorderBrush="{Binding IdleStateBorderBrush}"
+                                Background="{Binding IdleStateBackground}"
+                                BorderThickness="2"
+                                CornerRadius="5">
+                            <TextBlock Text="Idle"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
+
+                        <!-- LookUp State Box -->
+                        <Border Canvas.Left="140"
+                                Canvas.Top="10"
+                                Width="60"
+                                Height="40"
+                                BorderBrush="{Binding LookUpStateBorderBrush}"
+                                Background="{Binding LookUpStateBackground}"
+                                BorderThickness="2"
+                                CornerRadius="5">
+                            <TextBlock Text="Look Up"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
+
+                        <!-- Walking State Box -->
+                        <Border Canvas.Left="110"
+                                Canvas.Top="60"
+                                Width="60"
+                                Height="40"
+                                BorderBrush="{Binding WalkingStateBorderBrush}"
+                                Background="{Binding WalkingStateBackground}"
+                                BorderThickness="2"
+                                CornerRadius="5">
+                            <TextBlock Text="Walking"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
+
+                        <Border Canvas.Left="180"
+                                Canvas.Top="80"
+                                Width="60"
+                                Height="40"
+                                BorderBrush="{Binding RunningStateBorderBrush}"
+                                Background="{Binding RunningStateBackground}"
+                                BorderThickness="2"
+                                CornerRadius="5">
+                            <TextBlock Text="Running"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
+
+                        <!-- Updated Connectors -->
+                        <!-- Idle to Walking -->
+                        <Line X1="100"
+                                Y1="90"
+                                X2="110"
+                                Y2="80"
+                                Stroke="#888888"
+                                StrokeThickness="1.5"/>
+                        <!-- Walking to Running -->
+                        <Line X1="170"
+                                Y1="80"
+                                X2="180"
+                                Y2="90"
+                                Stroke="#888888"
+                                StrokeThickness="1.5"/>
+                        <!-- Running to Idle (bottom) -->
+                        <Line X1="100"
+                                Y1="110"
+                                X2="180"
+                                Y2="110"
+                                Stroke="#888888"
+                                StrokeThickness="1.5"/>
+                                
+                        <!-- LookUp connectors - Only to/from Idle -->
+                        <!-- Idle to LookUp -->
+                        <Line X1="70"
+                                Y1="80"
+                                X2="140"
+                                Y2="30"
+                                Stroke="#888888"
+                                StrokeThickness="1.5"/>
+                        <!-- LookUp to Idle -->
+                        <Line X1="140"
+                                Y1="30"
+                                X2="70"
+                                Y2="80"
+                                Stroke="#888888"
+                                StrokeThickness="1.5"
+                                StrokeDashArray="4,2"/>
+
+                        <!-- Last Transition Indicator -->
+                        <Path x:Name="TransitionPath"
+                              Stroke="Red"
+                              StrokeThickness="2.5"
+                              Opacity="{Binding TransitionIndicatorOpacity}"
+                              Data="{Binding LastTransitionPathData}"/>
+                    </Canvas>
+                </Grid>
+            </Border>
+
+            <!-- State Change Buttons -->
+            <GroupBox Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Header="Change State"
+                    Padding="10"
+                    Margin="0,0,0,20">
+                <UniformGrid Rows="1">
+                    <Button Content="Idle"
+                            Margin="8"
+                            Padding="15,8"
+                            Command="{Binding ChangeStateCommand}"
+                            CommandParameter="Idle"/>
+
+                    <Button Content="Look Up"
+                            Margin="8"
+                            Padding="15,8"
+                            Command="{Binding ChangeStateCommand}"
+                            CommandParameter="LookUp"/>
+
+                    <Button Content="Walking"
+                            Margin="8"
+                            Padding="15,8"
+                            Command="{Binding ChangeStateCommand}"
+                            CommandParameter="Walking"/>
+
+                    <Button Content="Running"
+                            Margin="8"
+                            Padding="15,8"
+                            Command="{Binding ChangeStateCommand}"
+                            CommandParameter="Running"/>
+
+                    <Button Content="Update Current State"
+                            Margin="8"
+                            Padding="15,8"
+                            Command="{Binding UpdateStateCommand}"/>
+                </UniformGrid>
+            </GroupBox>
+        </Grid>
+
+        <!-- Bottom Section -->
+        <Grid Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Log Display -->
+            <GroupBox Grid.Column="0"
+                    Header="State Machine Log"
+                    Padding="10"
+                    Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0,0,0,8">
+                        <Button Content="Simulate Activity"
+                                Command="{Binding SimulateActivityCommand}"
+                                Margin="0,0,8,0"
+                                Padding="12,4"/>
+
+                        <Button Content="Clear Log"
+                                Command="{Binding ClearLogCommand}"
+                                Padding="12,4"/>
+                    </StackPanel>
+
+                    <ScrollViewer Grid.Row="1"
+                            VerticalScrollBarVisibility="Auto">
+                        <TextBox Text="{Binding LogText, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 FontFamily="Consolas"
+                                 Background="#F5F5F5"
+                                 BorderThickness="0"/>
+                    </ScrollViewer>
+                </Grid>
+            </GroupBox>
+
+            <!-- State Machine Details Panel -->
+            <GroupBox Grid.Column="1"
+                    Header="State Machine Details">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                            Grid.Column="0"
+                            Text="Current State:"
+                            Margin="0,5,5,5"
+                            FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="0"
+                            Grid.Column="1"
+                            Text="{Binding CurrentStateName, Mode=OneWay}"
+                            Margin="0,5,0,5"/>
+
+                    <TextBlock Grid.Row="1"
+                            Grid.Column="0"
+                            Text="Previous State:"
+                            Margin="0,5,5,5"
+                            FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="1"
+                            Grid.Column="1"
+                            Text="{Binding PreviousStateName}"
+                            Margin="0,5,0,5"/>
+
+                    <TextBlock Grid.Row="2"
+                            Grid.Column="0"
+                            Text="State Count:"
+                            Margin="0,5,5,5"
+                            FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="2"
+                            Grid.Column="1"
+                            Text="{Binding StateCount}"
+                            Margin="0,5,0,5"/>
+
+                    <TextBlock Grid.Row="3"
+                            Grid.Column="0"
+                            Text="Time in State:"
+                            Margin="0,5,5,5"
+                            FontWeight="SemiBold"/>
+                    <TextBlock Grid.Row="3"
+                            Grid.Column="1"
+                            Text="{Binding TimeInCurrentState}"
+                            Margin="0,5,0,5"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
     </Grid>
 </Window>

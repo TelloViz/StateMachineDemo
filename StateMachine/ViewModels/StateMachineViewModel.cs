@@ -35,10 +35,12 @@ namespace StateMachine.ViewModels
         private SolidColorBrush _idleStateBackground = new SolidColorBrush(Colors.White);
         private SolidColorBrush _walkingStateBackground = new SolidColorBrush(Colors.White);
         private SolidColorBrush _runningStateBackground = new SolidColorBrush(Colors.White);
+        private SolidColorBrush _lookUpStateBackground = new SolidColorBrush(Colors.White);
         
         private SolidColorBrush _idleStateBorderBrush = new SolidColorBrush(Colors.Gray);
         private SolidColorBrush _walkingStateBorderBrush = new SolidColorBrush(Colors.Gray);
         private SolidColorBrush _runningStateBorderBrush = new SolidColorBrush(Colors.Gray);
+        private SolidColorBrush _lookUpStateBorderBrush = new SolidColorBrush(Colors.Gray);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -153,6 +155,16 @@ namespace StateMachine.ViewModels
             }
         }
         
+        public SolidColorBrush LookUpStateBackground 
+        { 
+            get => _lookUpStateBackground; 
+            set 
+            {
+                _lookUpStateBackground = value;
+                OnPropertyChanged();
+            }
+        }
+        
         public SolidColorBrush IdleStateBorderBrush 
         { 
             get => _idleStateBorderBrush; 
@@ -179,6 +191,16 @@ namespace StateMachine.ViewModels
             set 
             {
                 _runningStateBorderBrush = value;
+                OnPropertyChanged();
+            }
+        }
+        
+        public SolidColorBrush LookUpStateBorderBrush 
+        { 
+            get => _lookUpStateBorderBrush; 
+            set 
+            {
+                _lookUpStateBorderBrush = value;
                 OnPropertyChanged();
             }
         }
@@ -222,8 +244,9 @@ namespace StateMachine.ViewModels
             var idleState = new IdleState(AddLogMessage);
             var walkingState = new WalkingState(AddLogMessage);
             var runningState = new RunningState(AddLogMessage);
+            var lookUpState = new LookUpState(AddLogMessage);
             
-            _stateMachine.AddStates(idleState, walkingState, runningState);
+            _stateMachine.AddStates(idleState, walkingState, runningState, lookUpState);
             
             // Initialize available states collection
             foreach (var state in _stateMachine.States)
@@ -262,6 +285,19 @@ namespace StateMachine.ViewModels
         {
             if (!string.IsNullOrEmpty(stateName))
             {
+                // Check for LookUp state constraints
+                if (stateName == "LookUp" && CurrentStateName != "Idle")
+                {
+                    AddLogMessage($"Cannot transition to {stateName} from {CurrentStateName}. Only allowed from Idle state.");
+                    return;
+                }
+                
+                if (CurrentStateName == "LookUp" && stateName != "Idle")
+                {
+                    AddLogMessage($"Cannot transition from LookUp to {stateName}. Only allowed to go to Idle state.");
+                    return;
+                }
+                
                 _stateMachine.ChangeState(stateName);
             }
         }
@@ -317,6 +353,9 @@ namespace StateMachine.ViewModels
                 case "Running":
                     SpritesheetHelper.ConfigureRunningAnimation(_spriteAnimator);
                     break;
+                case "LookUp":
+                    SpritesheetHelper.ConfigureLookUpAnimation(_spriteAnimator);
+                    break;
                 default:
                     // Default to idle animation
                     SpritesheetHelper.ConfigureIdleAnimation(_spriteAnimator);
@@ -332,10 +371,12 @@ namespace StateMachine.ViewModels
             IdleStateBackground = new SolidColorBrush(Colors.White);
             WalkingStateBackground = new SolidColorBrush(Colors.White);
             RunningStateBackground = new SolidColorBrush(Colors.White);
+            LookUpStateBackground = new SolidColorBrush(Colors.White);
             
             IdleStateBorderBrush = new SolidColorBrush(Colors.Gray);
             WalkingStateBorderBrush = new SolidColorBrush(Colors.Gray);
             RunningStateBorderBrush = new SolidColorBrush(Colors.Gray);
+            LookUpStateBorderBrush = new SolidColorBrush(Colors.Gray);
             
             // Highlight current state
             switch (CurrentStateName)
@@ -352,6 +393,10 @@ namespace StateMachine.ViewModels
                     RunningStateBackground = new SolidColorBrush(Color.FromRgb(200, 230, 255));
                     RunningStateBorderBrush = new SolidColorBrush(Colors.Blue);
                     break;
+                case "LookUp":
+                    LookUpStateBackground = new SolidColorBrush(Color.FromRgb(200, 230, 255));
+                    LookUpStateBorderBrush = new SolidColorBrush(Colors.Blue);
+                    break;
             }
         }
         
@@ -363,23 +408,30 @@ namespace StateMachine.ViewModels
             // Define transition paths
             string pathData = "";
             
+            // Original transitions
             if (fromState == "Idle" && toState == "Walking")
-                pathData = "M95,75 C100,60 110,55 110,50";
+                pathData = "M100,85 C105,80 108,80 110,75";
             else if (fromState == "Walking" && toState == "Running")
-                pathData = "M165,50 C170,55 175,60 180,70";
+                pathData = "M170,80 C175,80 178,85 180,85";
             else if (fromState == "Running" && toState == "Idle")
-                pathData = "M180,90 C160,95 120,95 100,90";
+                pathData = "M180,110 C160,115 120,115 100,110";
             else if (fromState == "Walking" && toState == "Idle")
-                pathData = "M110,50 C105,60 100,65 95,70";
+                pathData = "M110,80 C105,85 100,85 95,90";
             else if (fromState == "Idle" && toState == "Running")
-                pathData = "M100,90 C130,95 150,95 180,90";
+                pathData = "M100,110 C130,115 150,115 180,110";
             else if (fromState == "Running" && toState == "Walking")
-                pathData = "M180,70 C175,60 170,55 165,50";
+                pathData = "M180,85 C175,85 170,80 165,80";
+                
+            // LookUp state transitions - only to/from Idle
+            else if (fromState == "Idle" && toState == "LookUp")
+                pathData = "M70,80 C90,50 120,30 140,30";
+            else if (fromState == "LookUp" && toState == "Idle")
+                pathData = "M140,30 C120,30 90,50 70,80";
             
             LastTransitionPathData = pathData;
             TransitionIndicatorOpacity = 1.0;
         }
-
+        
         private void ToggleAutomaticStateChanges()
         {
             _isSimulatingActivity = !_isSimulatingActivity;
@@ -398,15 +450,29 @@ namespace StateMachine.ViewModels
         
         private void SimulateStateChange()
         {
-            // Randomly change to another state
-            string[] stateOptions = { "Idle", "Walking", "Running" };
             string newState;
             
-            // Avoid picking the current state
-            do 
+            // Handle state transition restrictions
+            if (CurrentStateName == "LookUp")
             {
-                newState = stateOptions[_random.Next(stateOptions.Length)];
-            } while (newState == CurrentStateName);
+                // From LookUp, can only go to Idle
+                newState = "Idle";
+            }
+            else if (CurrentStateName == "Idle")
+            {
+                // From Idle, can go to any state
+                string[] idleOptions = { "Walking", "Running", "LookUp" };
+                newState = idleOptions[_random.Next(idleOptions.Length)];
+            }
+            else
+            {
+                // From other states, can go anywhere except LookUp
+                string[] otherOptions = { "Idle", "Walking", "Running" };
+                do 
+                {
+                    newState = otherOptions[_random.Next(otherOptions.Length)];
+                } while (newState == CurrentStateName);
+            }
             
             AddLogMessage($"Automatic transition to {newState}");
             ChangeState(newState);
