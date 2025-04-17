@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 namespace StateMachine.Animation
 {
@@ -9,8 +10,7 @@ namespace StateMachine.Animation
         // Path to the spritesheet (relative to executable)
         public static string GetSpritesheetPath()
         {
-            // Assuming the spritesheet is in the same directory as the executable
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Mario3.png");
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Mario3.png");
         }
 
         // Define frames for idle animation (standing)
@@ -27,7 +27,7 @@ namespace StateMachine.Animation
             animator.FrameDelay = TimeSpan.FromMilliseconds(500);
         }
 
- public static void ConfigureLookUpAnimation(SpriteAnimator animator)
+        public static void ConfigureLookUpAnimation(SpriteAnimator animator)
         {
             animator.ClearFrames();
             

@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using StateMachine.Animation;
 using StateMachine.ViewModels;
 
@@ -54,6 +56,14 @@ namespace StateMachine.Views
                     MessageBoxButton.OK,
                     MessageBoxImage.Error
                 );
+            }
+        }
+        
+        private void OnStateBoxClicked(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.Tag is string stateName && DataContext is StateMachineViewModel viewModel)
+            {
+                viewModel.ChangeStateCommand.Execute(stateName);
             }
         }
     }

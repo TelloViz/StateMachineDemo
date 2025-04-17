@@ -447,31 +447,31 @@ namespace StateMachine.ViewModels
             // Define transition paths
             string pathData = "";
             
-            // Original transitions
+            // Re-aligned transition paths for the new diagram layout
             if (fromState == "Idle" && toState == "Walking")
-                pathData = "M100,85 C105,80 108,80 110,75";
+                pathData = "M180,125 C185,125 195,125 200,125";
             else if (fromState == "Walking" && toState == "Running")
-                pathData = "M170,80 C175,80 178,85 180,85";
+                pathData = "M280,125 C285,125 295,125 300,125";
             else if (fromState == "Running" && toState == "Idle")
-                pathData = "M180,110 C160,115 120,115 100,110";
+                pathData = "M300,150 C250,150 150,150 100,150";
             else if (fromState == "Walking" && toState == "Idle")
-                pathData = "M110,80 C105,85 100,85 95,90";
+                pathData = "M200,125 C190,125 190,125 180,125";
             else if (fromState == "Idle" && toState == "Running")
-                pathData = "M100,110 C130,115 150,115 180,110";
+                pathData = "M100,150 C150,150 250,150 300,150";
             else if (fromState == "Running" && toState == "Walking")
-                pathData = "M180,85 C175,85 170,80 165,80";
+                pathData = "M300,125 C295,125 285,125 280,125";
                 
             // LookUp state transitions - only to/from Idle
             else if (fromState == "Idle" && toState == "LookUp")
-                pathData = "M70,80 C90,50 120,30 140,30";
+                pathData = "M140,100 C160,85 180,70 200,60";
             else if (fromState == "LookUp" && toState == "Idle")
-                pathData = "M140,30 C120,30 90,50 70,80";
+                pathData = "M200,60 C180,70 160,85 140,100";
                 
             // Ducking state transitions - only from Idle
             else if (fromState == "Idle" && toState == "Ducking")
-                pathData = "M45,120 C45,130 45,140 45,150";
+                pathData = "M140,150 C140,155 140,165 140,170";
             else if (fromState == "Ducking" && toState == "Idle")
-                pathData = "M55,150 C55,140 55,130 55,120";
+                pathData = "M140,170 C140,165 140,155 140,150";
             
             LastTransitionPathData = pathData;
             TransitionIndicatorOpacity = 1.0;
