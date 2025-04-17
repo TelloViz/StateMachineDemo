@@ -1,4 +1,4 @@
-namespace Vast.StateMachine
+namespace StateMachine.Core
 {
     public interface IStateMachine
     {

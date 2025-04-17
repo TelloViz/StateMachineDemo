@@ -1,5 +1,5 @@
 using System;
-using Vast.StateMachine;
+using StateMachine.Core;
 
 namespace StateMachine.Models
 {

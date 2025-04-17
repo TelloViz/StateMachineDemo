@@ -1,6 +1,6 @@
 using System;
 
-namespace Vast.StateMachine
+namespace StateMachine.Core
 {
     [Serializable]
     public abstract class State

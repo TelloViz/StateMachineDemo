@@ -8,13 +8,13 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using StateMachine.Animation;
 using StateMachine.Models;
-using Vast.StateMachine;
+using StateMachine.Core;
 
 namespace StateMachine.ViewModels
 {
     public class StateMachineViewModel : INotifyPropertyChanged
     {
-        private readonly Vast.StateMachine.StateMachine _stateMachine;
+        private readonly StateMachine.Core.StateMachine _stateMachine;
         private readonly DispatcherTimer _updateTimer;
         private readonly DispatcherTimer _activityTimer;
         private readonly Random _random = new Random();
@@ -208,7 +208,7 @@ namespace StateMachine.ViewModels
             }
             
             // Initialize state machine
-            _stateMachine = new Vast.StateMachine.StateMachine();
+            _stateMachine = new StateMachine.Core.StateMachine();
             _stateMachine.OnStateChange = state => 
             {
                 PreviousStateName = CurrentStateName;

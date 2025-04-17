@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace Vast.StateMachine {
+namespace StateMachine.Core
+{
     /// <summary>Maintains List of States, handles Adding, Removing, &amp; Changing of Active States.</summary>
     [Serializable]
-    public class StateMachine : IStateMachine {
+    public class StateMachine : IStateMachine
+    {
         #region Properties
         public State ActiveState { get; private set; }
         public State PreviousState { get; private set; }
@@ -16,7 +18,8 @@ namespace Vast.StateMachine {
 
         #region Constructors
         public StateMachine() { }
-        public StateMachine(State[] states) {
+        public StateMachine(State[] states)
+        {
             AddStates(states);
         }
         #endregion
@@ -25,11 +28,15 @@ namespace Vast.StateMachine {
         /// <summary>Adds a state to the State Machine.</summary>
         /// <param name="stateToAdd"></param>
         /// <returns>The State Added</returns>
-        public State AddState(State stateToAdd) {
+        public State AddState(State stateToAdd)
+        {
             State addedState = null;
-            if(ContainsState(stateToAdd)) {
+            if (ContainsState(stateToAdd))
+            {
                 Console.WriteLine($"State [{stateToAdd.Name}] NOT Added! Error: Duplicate State Name");
-            } else {
+            }
+            else
+            {
                 States.Add(stateToAdd);
                 addedState = stateToAdd;
                 OnStateAdd?.Invoke(addedState);
@@ -40,12 +47,15 @@ namespace Vast.StateMachine {
         /// <summary>Adds States to the State Machine</summary>
         /// <param name="statesToAdd"></param>
         /// <returns>Array of the States Added.</returns>
-        public State[] AddStates(params State[] statesToAdd) {
+        public State[] AddStates(params State[] statesToAdd)
+        {
             List<State> addedStates = new List<State>();
             State addedState = null;
-            for(int i = 0; i < statesToAdd.Length; i++) {
+            for (int i = 0; i < statesToAdd.Length; i++)
+            {
                 addedState = AddState(statesToAdd[i]);
-                if(addedState != null) {
+                if (addedState != null)
+                {
                     addedStates.Add(addedState);
                 }
             }
@@ -54,85 +64,110 @@ namespace Vast.StateMachine {
 
         /// <summary>Removes State from State Machine</summary>
         /// <param name="stateToRemove"></param>
-        public void RemState(State stateToRemove) {
-            if(ContainsState(stateToRemove)) {
+        public void RemState(State stateToRemove)
+        {
+            if (ContainsState(stateToRemove))
+            {
                 States.Remove(stateToRemove);
                 OnStateRemove?.Invoke(stateToRemove);
-            } else {
+            }
+            else
+            {
                 Console.WriteLine($"State [{stateToRemove.Name}] NOT Removed! Error: State Not Found In StateMachine");
             }
         }
 
         /// <summary>Removes State by String Name from State Machine</summary>
         /// <param name="stateNameToRemove"></param>
-        public void RemState(string stateNameToRemove) {
+        public void RemState(string stateNameToRemove)
+        {
             State stateToRemove = null;
-            if(ContainsState(stateNameToRemove, out stateToRemove)) {
+            if (ContainsState(stateNameToRemove, out stateToRemove))
+            {
                 RemState(stateToRemove);
-            } else {
+            }
+            else
+            {
                 Console.WriteLine($"State [{stateNameToRemove}] NOT Removed! Error: State Not Found In StateMachine");
             }
         }
 
         /// <summary>Removes Array of States from State Machine</summary>
         /// <param name="statesToRemove"></param>
-        public void RemStates(params State[] statesToRemove) {
-            foreach(State stateToRemove in statesToRemove) {
+        public void RemStates(params State[] statesToRemove)
+        {
+            foreach (State stateToRemove in statesToRemove)
+            {
                 RemState(stateToRemove);
             }
         }
 
         /// <summary>Removes Array of States by string Names from State Machine</summary>
         /// <param name="stateNamesToRemove"></param>
-        public void RemStates(params string[] stateNamesToRemove) {
-            foreach(string stateNameToRemove in stateNamesToRemove) {
+        public void RemStates(params string[] stateNamesToRemove)
+        {
+            foreach (string stateNameToRemove in stateNamesToRemove)
+            {
                 RemState(stateNameToRemove);
             }
         }
 
         /// <summary>Changes Active State &amp; Processes Transitions</summary>
         /// <param name="toState"></param>
-        public void ChangeState(State toState) {
-            if(ContainsState(toState)) {
-                if(ActiveState != null) {
+        public void ChangeState(State toState)
+        {
+            if (ContainsState(toState))
+            {
+                if (ActiveState != null)
+                {
                     ActiveState.OnExit();
                     PreviousState = ActiveState;
                 }
                 ActiveState = toState;
                 OnStateChange?.Invoke(toState);
                 ActiveState.OnEnter();
-            } else {
+            }
+            else
+            {
                 Console.WriteLine($"StateMachine does not contain an entry for: {toState.Name}");
             }
         }
 
         /// <summary>Changes Active State by Name &amp; Processes Transitions</summary>
         /// <param name="toStateName"></param>
-        public void ChangeState(string toStateName) {
+        public void ChangeState(string toStateName)
+        {
             State toState = null;
-            if(ContainsState(toStateName, out toState)) {
+            if (ContainsState(toStateName, out toState))
+            {
                 ChangeState(toState);
-            } else {
+            }
+            else
+            {
                 Console.WriteLine($"StateMachine does not contain an entry for: {toStateName}");
             }
         }
 
         /// <summary>Calls UpdateState in the active State.</summary>
-        public void UpdateActiveState() {
+        public void UpdateActiveState()
+        {
             ActiveState?.Update();
         }
 
         /// <summary>Calls FixedUpdateState in the active State.</summary>
-        public void FixedUpdateActiveState() {
+        public void FixedUpdateActiveState()
+        {
             ActiveState?.FixedUpdate();
         }
 
         /// <summary>Does the State Machine contain this State?</summary>
         /// <param name="state"></param>
         /// <returns>True or False</returns>
-        public bool ContainsState(State state) {
-            for(int i = 0; i < States.Count; i++) {
-                if(States[i] == state) { return true; }
+        public bool ContainsState(State state)
+        {
+            for (int i = 0; i < States.Count; i++)
+            {
+                if (States[i] == state) { return true; }
             }
             return false;
         }
@@ -140,9 +175,11 @@ namespace Vast.StateMachine {
         /// <summary>Does the State Machine contain a State with this name?</summary>
         /// <param name="stateName"></param>
         /// <returns>True or False</returns>
-        public bool ContainsState(string stateName) {
-            for(int i = 0; i < States.Count; i++) {
-                if(States[i].Name == stateName) { return true; }
+        public bool ContainsState(string stateName)
+        {
+            for (int i = 0; i < States.Count; i++)
+            {
+                if (States[i].Name == stateName) { return true; }
             }
             return false;
         }
@@ -151,10 +188,13 @@ namespace Vast.StateMachine {
         /// <param name="stateName"></param>
         /// <param name="foundState"></param>
         /// <returns>True or False</returns>
-        public bool ContainsState(string stateName, out State foundState) {
+        public bool ContainsState(string stateName, out State foundState)
+        {
             foundState = null;
-            for(int i = 0; i < States.Count; i++) {
-                if(States[i].Name == stateName) {
+            for (int i = 0; i < States.Count; i++)
+            {
+                if (States[i].Name == stateName)
+                {
                     foundState = States[i];
                     break;
                 }
