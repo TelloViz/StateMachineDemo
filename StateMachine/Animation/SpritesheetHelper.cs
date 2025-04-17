@@ -42,6 +42,18 @@ namespace StateMachine.Animation
             animator.FrameDelay = TimeSpan.FromMilliseconds(500);
         }
 
+        public static void ConfigureDuckingAnimation(SpriteAnimator animator)
+        {
+            animator.ClearFrames();
+            
+            animator.AddFrames(new List<(int x, int y, int width, int height)>
+            {
+                (104, 0, 48, 48),
+            });
+            
+            animator.FrameDelay = TimeSpan.FromMilliseconds(500);
+        }
+
         // Define frames for walking animation using the exact coordinates provided
         public static void ConfigureWalkingAnimation(SpriteAnimator animator)
         {

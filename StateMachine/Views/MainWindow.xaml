@@ -138,6 +138,20 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"/>
                         </Border>
+                                
+                        <!-- Ducking State Box -->
+                        <Border Canvas.Left="40"
+                                Canvas.Top="150"
+                                Width="60"
+                                Height="40"
+                                BorderBrush="{Binding DuckingStateBorderBrush}"
+                                Background="{Binding DuckingStateBackground}"
+                                BorderThickness="2"
+                                CornerRadius="5">
+                            <TextBlock Text="Ducking"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                        </Border>
 
                         <!-- Updated Connectors -->
                         <!-- Idle to Walking -->
@@ -175,6 +189,21 @@
                                 Y1="30"
                                 X2="70"
                                 Y2="80"
+                                Stroke="#888888"
+                                StrokeThickness="1.5"
+                                StrokeDashArray="4,2"/>
+                                
+                        <!-- Ducking connectors - Only to/from Idle (using a single bidirectional line) -->
+                        <Line X1="50"
+                                Y1="120"
+                                X2="50"
+                                Y2="150"
+                                Stroke="#888888"
+                                StrokeThickness="1.5"/>
+                        <Line X1="50"
+                                Y1="150"
+                                X2="50"
+                                Y2="120"
                                 Stroke="#888888"
                                 StrokeThickness="1.5"
                                 StrokeDashArray="4,2"/>
@@ -220,6 +249,12 @@
                             Padding="15,8"
                             Command="{Binding ChangeStateCommand}"
                             CommandParameter="Running"/>
+                            
+                    <Button Content="Ducking"
+                            Margin="8"
+                            Padding="15,8"
+                            Command="{Binding ChangeStateCommand}"
+                            CommandParameter="Ducking"/>
 
                     <Button Content="Update Current State"
                             Margin="8"

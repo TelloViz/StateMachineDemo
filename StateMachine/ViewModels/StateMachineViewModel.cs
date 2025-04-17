@@ -36,11 +36,13 @@ namespace StateMachine.ViewModels
         private SolidColorBrush _walkingStateBackground = new SolidColorBrush(Colors.White);
         private SolidColorBrush _runningStateBackground = new SolidColorBrush(Colors.White);
         private SolidColorBrush _lookUpStateBackground = new SolidColorBrush(Colors.White);
+        private SolidColorBrush _duckingStateBackground = new SolidColorBrush(Colors.White);
         
         private SolidColorBrush _idleStateBorderBrush = new SolidColorBrush(Colors.Gray);
         private SolidColorBrush _walkingStateBorderBrush = new SolidColorBrush(Colors.Gray);
         private SolidColorBrush _runningStateBorderBrush = new SolidColorBrush(Colors.Gray);
         private SolidColorBrush _lookUpStateBorderBrush = new SolidColorBrush(Colors.Gray);
+        private SolidColorBrush _duckingStateBorderBrush = new SolidColorBrush(Colors.Gray);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -165,6 +167,16 @@ namespace StateMachine.ViewModels
             }
         }
         
+        public SolidColorBrush DuckingStateBackground 
+        { 
+            get => _duckingStateBackground; 
+            set 
+            {
+                _duckingStateBackground = value;
+                OnPropertyChanged();
+            }
+        }
+        
         public SolidColorBrush IdleStateBorderBrush 
         { 
             get => _idleStateBorderBrush; 
@@ -201,6 +213,16 @@ namespace StateMachine.ViewModels
             set 
             {
                 _lookUpStateBorderBrush = value;
+                OnPropertyChanged();
+            }
+        }
+        
+        public SolidColorBrush DuckingStateBorderBrush 
+        { 
+            get => _duckingStateBorderBrush; 
+            set 
+            {
+                _duckingStateBorderBrush = value;
                 OnPropertyChanged();
             }
         }
@@ -245,8 +267,9 @@ namespace StateMachine.ViewModels
             var walkingState = new WalkingState(AddLogMessage);
             var runningState = new RunningState(AddLogMessage);
             var lookUpState = new LookUpState(AddLogMessage);
+            var duckingState = new DuckingState(AddLogMessage);
             
-            _stateMachine.AddStates(idleState, walkingState, runningState, lookUpState);
+            _stateMachine.AddStates(idleState, walkingState, runningState, lookUpState, duckingState);
             
             // Initialize available states collection
             foreach (var state in _stateMachine.States)
@@ -295,6 +318,13 @@ namespace StateMachine.ViewModels
                 if (CurrentStateName == "LookUp" && stateName != "Idle")
                 {
                     AddLogMessage($"Cannot transition from LookUp to {stateName}. Only allowed to go to Idle state.");
+                    return;
+                }
+                
+                // Check for Ducking state constraints
+                if (stateName == "Ducking" && CurrentStateName != "Idle")
+                {
+                    AddLogMessage($"Cannot transition to {stateName} from {CurrentStateName}. Only allowed from Idle state.");
                     return;
                 }
                 
@@ -356,6 +386,9 @@ namespace StateMachine.ViewModels
                 case "LookUp":
                     SpritesheetHelper.ConfigureLookUpAnimation(_spriteAnimator);
                     break;
+                case "Ducking":
+                    SpritesheetHelper.ConfigureDuckingAnimation(_spriteAnimator);
+                    break;
                 default:
                     // Default to idle animation
                     SpritesheetHelper.ConfigureIdleAnimation(_spriteAnimator);
@@ -372,11 +405,13 @@ namespace StateMachine.ViewModels
             WalkingStateBackground = new SolidColorBrush(Colors.White);
             RunningStateBackground = new SolidColorBrush(Colors.White);
             LookUpStateBackground = new SolidColorBrush(Colors.White);
+            DuckingStateBackground = new SolidColorBrush(Colors.White);
             
             IdleStateBorderBrush = new SolidColorBrush(Colors.Gray);
             WalkingStateBorderBrush = new SolidColorBrush(Colors.Gray);
             RunningStateBorderBrush = new SolidColorBrush(Colors.Gray);
             LookUpStateBorderBrush = new SolidColorBrush(Colors.Gray);
+            DuckingStateBorderBrush = new SolidColorBrush(Colors.Gray);
             
             // Highlight current state
             switch (CurrentStateName)
@@ -396,6 +431,10 @@ namespace StateMachine.ViewModels
                 case "LookUp":
                     LookUpStateBackground = new SolidColorBrush(Color.FromRgb(200, 230, 255));
                     LookUpStateBorderBrush = new SolidColorBrush(Colors.Blue);
+                    break;
+                case "Ducking":
+                    DuckingStateBackground = new SolidColorBrush(Color.FromRgb(200, 230, 255));
+                    DuckingStateBorderBrush = new SolidColorBrush(Colors.Blue);
                     break;
             }
         }
@@ -427,6 +466,12 @@ namespace StateMachine.ViewModels
                 pathData = "M70,80 C90,50 120,30 140,30";
             else if (fromState == "LookUp" && toState == "Idle")
                 pathData = "M140,30 C120,30 90,50 70,80";
+                
+            // Ducking state transitions - only from Idle
+            else if (fromState == "Idle" && toState == "Ducking")
+                pathData = "M45,120 C45,130 45,140 45,150";
+            else if (fromState == "Ducking" && toState == "Idle")
+                pathData = "M55,150 C55,140 55,130 55,120";
             
             LastTransitionPathData = pathData;
             TransitionIndicatorOpacity = 1.0;
@@ -461,12 +506,17 @@ namespace StateMachine.ViewModels
             else if (CurrentStateName == "Idle")
             {
                 // From Idle, can go to any state
-                string[] idleOptions = { "Walking", "Running", "LookUp" };
+                string[] idleOptions = { "Walking", "Running", "LookUp", "Ducking" };
                 newState = idleOptions[_random.Next(idleOptions.Length)];
+            }
+            else if (CurrentStateName == "Ducking")
+            {
+                // From Ducking, can only go to Idle
+                newState = "Idle";
             }
             else
             {
-                // From other states, can go anywhere except LookUp
+                // From other states, can go anywhere except LookUp and Ducking
                 string[] otherOptions = { "Idle", "Walking", "Running" };
                 do 
                 {
