@@ -36,7 +36,17 @@ namespace StateMachine.Views
                 
                 try
                 {
-                    DataContext = new StateMachineViewModel();
+                    var viewModel = new StateMachineViewModel();
+                    DataContext = viewModel;
+                    
+                    // Provide path references to ViewModel with arrowheads
+                    viewModel.RegisterTransitionPaths(
+                        IdleToWalking, IdleToWalking_Forward, IdleToWalking_Backward,
+                        WalkingToRunning, WalkingToRunning_Forward, WalkingToRunning_Backward,
+                        IdleToRunning, IdleToRunning_Forward, IdleToRunning_Backward,
+                        IdleToLookUp, IdleToLookUp_Forward, IdleToLookUp_Backward,
+                        IdleToDucking, IdleToDucking_Forward, IdleToDucking_Backward
+                    );
                 }
                 catch (Exception ex)
                 {

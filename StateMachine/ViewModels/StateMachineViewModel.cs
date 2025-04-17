@@ -5,10 +5,12 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using StateMachine.Animation;
 using StateMachine.Models;
 using StateMachine.Core;
+using System.Collections.Generic;
 
 namespace StateMachine.ViewModels
 {
@@ -27,8 +29,6 @@ namespace StateMachine.ViewModels
         private ImageSource _currentSpriteFrame;
         private DateTime _stateEntryTime;
         private string _timeInCurrentState = "0s";
-        private double _transitionIndicatorOpacity = 0;
-        private string _lastTransitionPathData = "";
         private bool _isSimulatingActivity = false;
         
         // State visualization properties
@@ -43,6 +43,13 @@ namespace StateMachine.ViewModels
         private SolidColorBrush _runningStateBorderBrush = new SolidColorBrush(Colors.Gray);
         private SolidColorBrush _lookUpStateBorderBrush = new SolidColorBrush(Colors.Gray);
         private SolidColorBrush _duckingStateBorderBrush = new SolidColorBrush(Colors.Gray);
+
+        private Dictionary<string, Path> _transitionPaths = new Dictionary<string, Path>();
+        private Dictionary<string, Path> _arrowheadPaths = new Dictionary<string, Path>();
+        private Path _lastHighlightedPath;
+        private Path _lastHighlightedArrowhead;
+        private SolidColorBrush _defaultPathColor = new SolidColorBrush(Colors.Gray);
+        private SolidColorBrush _highlightPathColor = new SolidColorBrush(Colors.Red);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -103,26 +110,6 @@ namespace StateMachine.ViewModels
             private set
             {
                 _timeInCurrentState = value;
-                OnPropertyChanged();
-            }
-        }
-        
-        public double TransitionIndicatorOpacity
-        {
-            get => _transitionIndicatorOpacity;
-            private set
-            {
-                _transitionIndicatorOpacity = value;
-                OnPropertyChanged();
-            }
-        }
-        
-        public string LastTransitionPathData
-        {
-            get => _lastTransitionPathData;
-            private set
-            {
-                _lastTransitionPathData = value;
                 OnPropertyChanged();
             }
         }
@@ -288,7 +275,6 @@ namespace StateMachine.ViewModels
             _updateTimer.Tick += (s, e) => 
             {
                 UpdateTimeInState();
-                FadeTransitionIndicator();
             };
             _updateTimer.Start();
             
@@ -302,6 +288,34 @@ namespace StateMachine.ViewModels
                 _stateMachine.ChangeState(_stateMachine.States[0]);
                 OnPropertyChanged(nameof(StateCount));
             }
+        }
+        
+        public void RegisterTransitionPaths(
+            Path idleToWalking, Path idleToWalking_Forward, Path idleToWalking_Backward,
+            Path walkingToRunning, Path walkingToRunning_Forward, Path walkingToRunning_Backward,
+            Path idleToRunning, Path idleToRunning_Forward, Path idleToRunning_Backward,
+            Path idleToLookUp, Path idleToLookUp_Forward, Path idleToLookUp_Backward,
+            Path idleToDucking, Path idleToDucking_Forward, Path idleToDucking_Backward)
+        {
+            _transitionPaths["IdleToWalking"] = idleToWalking;
+            _arrowheadPaths["IdleToWalking_Forward"] = idleToWalking_Forward;
+            _arrowheadPaths["IdleToWalking_Backward"] = idleToWalking_Backward;
+            
+            _transitionPaths["WalkingToRunning"] = walkingToRunning;
+            _arrowheadPaths["WalkingToRunning_Forward"] = walkingToRunning_Forward;
+            _arrowheadPaths["WalkingToRunning_Backward"] = walkingToRunning_Backward;
+            
+            _transitionPaths["IdleToRunning"] = idleToRunning;
+            _arrowheadPaths["IdleToRunning_Forward"] = idleToRunning_Forward;
+            _arrowheadPaths["IdleToRunning_Backward"] = idleToRunning_Backward;
+            
+            _transitionPaths["IdleToLookUp"] = idleToLookUp;
+            _arrowheadPaths["IdleToLookUp_Forward"] = idleToLookUp_Forward;
+            _arrowheadPaths["IdleToLookUp_Backward"] = idleToLookUp_Backward;
+            
+            _transitionPaths["IdleToDucking"] = idleToDucking;
+            _arrowheadPaths["IdleToDucking_Forward"] = idleToDucking_Forward;
+            _arrowheadPaths["IdleToDucking_Backward"] = idleToDucking_Backward;
         }
         
         private void ChangeState(string stateName)
@@ -354,15 +368,6 @@ namespace StateMachine.ViewModels
         {
             var timeInState = DateTime.Now - _stateEntryTime;
             TimeInCurrentState = $"{timeInState.TotalSeconds:F1}s";
-        }
-        
-        private void FadeTransitionIndicator()
-        {
-            if (TransitionIndicatorOpacity > 0)
-            {
-                TransitionIndicatorOpacity -= 0.02;
-                if (TransitionIndicatorOpacity < 0) TransitionIndicatorOpacity = 0;
-            }
         }
         
         private void UpdateAnimationForState()
@@ -441,40 +446,94 @@ namespace StateMachine.ViewModels
         
         private void DisplayStateTransition(string fromState, string toState)
         {
-            // Show transition animation on the state diagram
+            // Show transition animation by highlighting the appropriate edge and arrowhead
             if (fromState == toState || fromState == "None") return;
             
-            // Define transition paths
-            string pathData = "";
+            // Reset any previous highlight before setting a new one
+            ResetTransitionHighlight();
             
-            // Re-aligned transition paths for the new diagram layout
+            Path pathToHighlight = null;
+            Path arrowheadToHighlight = null;
+            
+            // Determine which path/arrowhead to highlight based on direction
             if (fromState == "Idle" && toState == "Walking")
-                pathData = "M180,125 C185,125 195,125 200,125";
-            else if (fromState == "Walking" && toState == "Running")
-                pathData = "M280,125 C285,125 295,125 300,125";
-            else if (fromState == "Running" && toState == "Idle")
-                pathData = "M300,150 C250,150 150,150 100,150";
+            {
+                pathToHighlight = _transitionPaths["IdleToWalking"];
+                arrowheadToHighlight = _arrowheadPaths["IdleToWalking_Forward"];
+            }
             else if (fromState == "Walking" && toState == "Idle")
-                pathData = "M200,125 C190,125 190,125 180,125";
-            else if (fromState == "Idle" && toState == "Running")
-                pathData = "M100,150 C150,150 250,150 300,150";
+            {
+                pathToHighlight = _transitionPaths["IdleToWalking"];
+                arrowheadToHighlight = _arrowheadPaths["IdleToWalking_Backward"];
+            }
+            else if (fromState == "Walking" && toState == "Running")
+            {
+                pathToHighlight = _transitionPaths["WalkingToRunning"];
+                arrowheadToHighlight = _arrowheadPaths["WalkingToRunning_Forward"];
+            }
             else if (fromState == "Running" && toState == "Walking")
-                pathData = "M300,125 C295,125 285,125 280,125";
-                
-            // LookUp state transitions - only to/from Idle
+            {
+                pathToHighlight = _transitionPaths["WalkingToRunning"];
+                arrowheadToHighlight = _arrowheadPaths["WalkingToRunning_Backward"];
+            }
+            else if (fromState == "Idle" && toState == "Running")
+            {
+                pathToHighlight = _transitionPaths["IdleToRunning"];
+                arrowheadToHighlight = _arrowheadPaths["IdleToRunning_Forward"];
+            }
+            else if (fromState == "Running" && toState == "Idle")
+            {
+                pathToHighlight = _transitionPaths["IdleToRunning"];
+                arrowheadToHighlight = _arrowheadPaths["IdleToRunning_Backward"];
+            }
             else if (fromState == "Idle" && toState == "LookUp")
-                pathData = "M140,100 C160,85 180,70 200,60";
+            {
+                pathToHighlight = _transitionPaths["IdleToLookUp"];
+                arrowheadToHighlight = _arrowheadPaths["IdleToLookUp_Forward"];
+            }
             else if (fromState == "LookUp" && toState == "Idle")
-                pathData = "M200,60 C180,70 160,85 140,100";
-                
-            // Ducking state transitions - only from Idle
+            {
+                pathToHighlight = _transitionPaths["IdleToLookUp"];
+                arrowheadToHighlight = _arrowheadPaths["IdleToLookUp_Backward"];
+            }
             else if (fromState == "Idle" && toState == "Ducking")
-                pathData = "M140,150 C140,155 140,165 140,170";
+            {
+                pathToHighlight = _transitionPaths["IdleToDucking"];
+                arrowheadToHighlight = _arrowheadPaths["IdleToDucking_Forward"];
+            }
             else if (fromState == "Ducking" && toState == "Idle")
-                pathData = "M140,170 C140,165 140,155 140,150";
+            {
+                pathToHighlight = _transitionPaths["IdleToDucking"];
+                arrowheadToHighlight = _arrowheadPaths["IdleToDucking_Backward"];
+            }
             
-            LastTransitionPathData = pathData;
-            TransitionIndicatorOpacity = 1.0;
+            // Highlight the path and arrowhead if found
+            if (pathToHighlight != null)
+            {
+                pathToHighlight.Stroke = _highlightPathColor;
+                _lastHighlightedPath = pathToHighlight;
+            }
+            
+            if (arrowheadToHighlight != null)
+            {
+                arrowheadToHighlight.Fill = _highlightPathColor;
+                _lastHighlightedArrowhead = arrowheadToHighlight;
+            }
+        }
+        
+        private void ResetTransitionHighlight()
+        {
+            if (_lastHighlightedPath != null)
+            {
+                _lastHighlightedPath.Stroke = _defaultPathColor;
+                _lastHighlightedPath = null;
+            }
+            
+            if (_lastHighlightedArrowhead != null)
+            {
+                _lastHighlightedArrowhead.Fill = _defaultPathColor;
+                _lastHighlightedArrowhead = null;
+            }
         }
         
         private void ToggleAutomaticStateChanges()

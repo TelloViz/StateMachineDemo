@@ -70,12 +70,12 @@
                     <Canvas Grid.Row="1"
                             x:Name="StateDiagramCanvas"
                             Background="#FCFCFC"
-                            Width="400"
-                            Height="250"
+                            Width="450"
+                            Height="280"
                             Margin="10">
                         <!-- Idle State Box (Clickable) -->
-                        <Border Canvas.Left="100"
-                                Canvas.Top="100"
+                        <Border Canvas.Left="80"
+                                Canvas.Top="120"
                                 Width="80"
                                 Height="50"
                                 BorderBrush="{Binding IdleStateBorderBrush}"
@@ -92,7 +92,7 @@
                         </Border>
 
                         <!-- LookUp State Box (Clickable) -->
-                        <Border Canvas.Left="200"
+                        <Border Canvas.Left="80"
                                 Canvas.Top="30"
                                 Width="80"
                                 Height="50"
@@ -110,8 +110,8 @@
                         </Border>
 
                         <!-- Walking State Box (Clickable) -->
-                        <Border Canvas.Left="200"
-                                Canvas.Top="100"
+                        <Border Canvas.Left="220"
+                                Canvas.Top="120"
                                 Width="80"
                                 Height="50"
                                 BorderBrush="{Binding WalkingStateBorderBrush}"
@@ -127,9 +127,9 @@
                                     FontWeight="SemiBold"/>
                         </Border>
 
-                        <!-- Running State Box (Clickable) -->
-                        <Border Canvas.Left="300"
-                                Canvas.Top="100"
+                        <!-- Running State Box (Clickable) - REPOSITIONED to be below Walking -->
+                        <Border Canvas.Left="220"
+                                Canvas.Top="210"
                                 Width="80"
                                 Height="50"
                                 BorderBrush="{Binding RunningStateBorderBrush}"
@@ -146,8 +146,8 @@
                         </Border>
                                 
                         <!-- Ducking State Box (Clickable) -->
-                        <Border Canvas.Left="100"
-                                Canvas.Top="170"
+                        <Border Canvas.Left="80"
+                                Canvas.Top="210"
                                 Width="80"
                                 Height="50"
                                 BorderBrush="{Binding DuckingStateBorderBrush}"
@@ -163,71 +163,32 @@
                                     FontWeight="SemiBold"/>
                         </Border>
 
-                        <!-- Updated Connectors -->
-                        <!-- Idle to Walking -->
-                        <Line X1="180"
-                              Y1="125"
-                              X2="200"
-                              Y2="125"
-                              Stroke="#888888"
-                              StrokeThickness="2"/>
+                        <!-- Updated connections for the new layout -->
                         
-                        <!-- Walking to Running -->
-                        <Line X1="280"
-                              Y1="125"
-                              X2="300"
-                              Y2="125"
-                              Stroke="#888888"
-                              StrokeThickness="2"/>
-                        
-                        <!-- Running to Idle (bottom) -->
-                        <Line X1="300"
-                              Y1="150"
-                              X2="100"
-                              Y2="150"
-                              Stroke="#888888"
-                              StrokeThickness="2"/>
-                                
-                        <!-- Idle to LookUp -->
-                        <Line X1="140"
-                              Y1="100"
-                              X2="200"
-                              Y2="60"
-                              Stroke="#888888"
-                              StrokeThickness="2"/>
-                        
-                        <!-- LookUp to Idle -->
-                        <Line X1="200"
-                              Y1="60"
-                              X2="140"
-                              Y2="100"
-                              Stroke="#888888"
-                              StrokeThickness="2"
-                              StrokeDashArray="4,2"/>
-                                
-                        <!-- Idle to Ducking -->
-                        <Line X1="140"
-                              Y1="150"
-                              X2="140"
-                              Y2="170"
-                              Stroke="#888888"
-                              StrokeThickness="2"/>
-                        
-                        <!-- Ducking to Idle -->
-                        <Line X1="140"
-                              Y1="170"
-                              X2="140"
-                              Y2="150"
-                              Stroke="#888888"
-                              StrokeThickness="2"
-                              StrokeDashArray="4,2"/>
+                        <!-- Idle <-> Walking (bidirectional) -->
+                        <Path x:Name="IdleToWalking" Stroke="#888888" StrokeThickness="2" Data="M 160,145 L 220,145"/>
+                        <Path x:Name="IdleToWalking_Forward" Fill="#888888" Data="M 220,145 L 210,140 L 210,150 Z"/>
+                        <Path x:Name="IdleToWalking_Backward" Fill="#888888" Data="M 160,145 L 170,140 L 170,150 Z"/>
 
-                        <!-- Last Transition Indicator -->
-                        <Path x:Name="TransitionPath"
-                              Stroke="Red"
-                              StrokeThickness="3"
-                              Opacity="{Binding TransitionIndicatorOpacity}"
-                              Data="{Binding LastTransitionPathData}"/>
+                        <!-- Walking <-> Running (now vertical, bidirectional) -->
+                        <Path x:Name="WalkingToRunning" Stroke="#888888" StrokeThickness="2" Data="M 260,170 L 260,210"/>
+                        <Path x:Name="WalkingToRunning_Forward" Fill="#888888" Data="M 260,210 L 255,200 L 265,200 Z"/>
+                        <Path x:Name="WalkingToRunning_Backward" Fill="#888888" Data="M 260,170 L 255,180 L 265,180 Z"/>
+
+                        <!-- Idle <-> Running (diagonal bidirectional) -->
+                        <Path x:Name="IdleToRunning" Stroke="#888888" StrokeThickness="2" Data="M 160,150 C 180,180 200,210 220,230"/>
+                        <Path x:Name="IdleToRunning_Forward" Fill="#888888" Data="M 220,230 L 210,225 L 215,218 Z"/>
+                        <Path x:Name="IdleToRunning_Backward" Fill="#888888" Data="M 160,150 L 170,155 L 165,162 Z"/>
+
+                        <!-- Idle <-> LookUp (now vertical bidirectional, matching the style of Idle <-> Ducking) -->
+                        <Path x:Name="IdleToLookUp" Stroke="#888888" StrokeThickness="2" Data="M 120,120 L 120,80"/>
+                        <Path x:Name="IdleToLookUp_Forward" Fill="#888888" Data="M 120,80 L 115,90 L 125,90 Z"/>
+                        <Path x:Name="IdleToLookUp_Backward" Fill="#888888" Data="M 120,120 L 115,110 L 125,110 Z"/>
+
+                        <!-- Idle <-> Ducking (bidirectional) -->
+                        <Path x:Name="IdleToDucking" Stroke="#888888" StrokeThickness="2" Data="M 120,170 L 120,210"/>
+                        <Path x:Name="IdleToDucking_Forward" Fill="#888888" Data="M 120,210 L 115,200 L 125,200 Z"/>
+                        <Path x:Name="IdleToDucking_Backward" Fill="#888888" Data="M 120,170 L 115,180 L 125,180 Z"/>
                     </Canvas>
                 </Grid>
             </Border>
